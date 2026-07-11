@@ -1,6 +1,6 @@
 {
   "name": "hive-rp-launcher",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Лаунчер HIVE RP в стиле GTA 5 RP",
   "main": "src/main.js",
   "author": "Maksim",
@@ -25,7 +25,7 @@
     "nsis": { "oneClick": false, "allowToChangeInstallationDirectory": true },
     "files": ["src/**/*", "config.json", "package.json"],
     "publish": [
-      { "provider": "github", "owner": "ghost228-bot", "repo": "hive-rp-launcher" }
-    ]
+  { "provider": "github", "owner": "ghost228-bot", "repo": "hive-rp-launcher", "releaseType": "release" }
+]
   }
 }
