@@ -3,9 +3,9 @@
   "serverIp": "srv11.vrhosting.su",
   "serverPort": 25619,
   "minecraftVersion": "1.16.5",
-  "loader": "vanilla",
-  "forgeInstallerUrl": "",
-  "modsManifestUrl": "",
+  "loader": "forge",
+  "forgeInstallerUrl": "https://maven.minecraftforge.net/net/minecraftforge/forge/1.16.5-36.2.39/forge-1.16.5-36.2.39-installer.jar",
+  "modsManifestUrl": "https://raw.githubusercontent.com/ghost228-bot/hive-rp-launcher/main/mods/mods.json",
   "newsUrl": "",
   "authApiUrl": "",
   "defaultRamMb": 4096,
@@ -70,5 +70,6 @@
     }
   ],
   "guardPort": 8777,
-  "guardSecret": "65550c924d9b8a2a71e6cfa141f76ce2aa60f5f91264bb29"
+  "guardSecret": "65550c924d9b8a2a71e6cfa141f76ce2aa60f5f91264bb29",
+  "javaPath": ""
 }
