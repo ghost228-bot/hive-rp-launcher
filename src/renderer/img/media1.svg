@@ -20,7 +20,7 @@
   <g transform="rotate(-3 200 200)" font-family="Arial Black, Arial">
     <text x="42" y="200" font-size="50" font-weight="900" fill="#000" opacity=".55" letter-spacing="1" transform="translate(4 5)">КАК НАЧАТЬ</text>
     <text x="42" y="200" font-size="50" font-weight="900" fill="#ffffff" letter-spacing="1">КАК НАЧАТЬ</text>
-    <rect x="44" y="216" width="70" height="30" fill="#f4711f"/>
-    <text x="57" y="237" font-size="15" font-weight="900" fill="#fff" letter-spacing="2">ГАЙД</text>
+    <rect x="44" y="216" width="94" height="32" fill="#f4711f"/>
+    <text x="91" y="238" text-anchor="middle" font-size="15" font-weight="900" fill="#fff" letter-spacing="2">ГАЙД</text>
   </g>
 </svg>
