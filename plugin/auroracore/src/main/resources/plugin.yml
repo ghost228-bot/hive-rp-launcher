@@ -1,0 +1,16 @@
+name: AuroraCore
+main: ru.hivegrief.auroracore.AuroraCore
+version: 1.0.0
+api-version: "1.16"
+author: HIVE RP
+softdepend: [SkinsRestorer, Citizens]
+commands:
+  aurora:
+    description: Управление AuroraCore
+    usage: /aurora <setpodium|setpreview|setspawn|setcamera|reset|reload>
+    aliases: [char]
+  passport:
+    description: Показать паспорт
+permissions:
+  aurora.admin:
+    default: op

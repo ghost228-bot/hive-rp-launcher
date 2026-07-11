@@ -1,0 +1,40 @@
+# AuroraCore — HIVE RP
+# 1) Вставь студию: файл hive_studio.schem → plugins/FastAsyncWorldEdit/schematics/
+#    В игре:  //schem load hive_studio  →  //paste -a   (ставь где-нибудь в стороне/в небе)
+# 2) Встань в оранжевый круг на полу студии → /aurora setpodium   (тут стоит игрок)
+# 3) Встань на кварцевый подиум у задника  → /aurora setpreview  (тут стоит NPC-манекен)
+# 4) Спавн уже прописан (5408 33 8698, мир world). Если мир называется иначе —
+#    встань на точке и выполни /aurora setspawn
+# camera — необязательно: красивый вид на город, показывается 3 сек перед студией
+podium: ""
+preview: ""
+spawn: "world;5408.5;33.0;8698.5;0.0;0.0"
+camera: ""
+
+age-min: 16
+age-max: 80
+
+# Имя над головой:
+#   hologram — над головой RP-имя (Ivan Petrov), ник скрыт
+#   prefix   — RP-имя перед ником
+#   off      — не трогать
+nametag-mode: hologram
+
+# Формат чата "Ivan Petrov » сообщение"
+chat-format: true
+
+# Каталог внешности. Формат: "Название в меню|НикПремиум-аккаунта"
+# SkinsRestorer сам скачает скин с Mojang по нику. Замени на свои.
+skins:
+  male:
+    - "Классика|Notch"
+    - "Разработчик|jeb_"
+    - "Строитель|Dinnerbone"
+    - "Горожанин|Grumm"
+    - "Спортсмен|Marc"
+    - "Бизнесмен|Alex"
+  female:
+    - "Классика|Alex"
+    - "Горожанка|Grumm"
+    - "Студентка|jeb_"
+    - "Спортсменка|Marc"
