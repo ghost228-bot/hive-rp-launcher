@@ -242,7 +242,8 @@ ipcMain.handle('game:launch', async (_e, { username, ip, port }) => {
   if (launching) return { ok: false, error: 'Игра уже запускается' };
   launching = true;
   try {
-    await syncMods();
+    try { await syncMods(); }
+    catch (e) { send('status', 'Список модов недоступен, запускаем без проверки...'); }
 
     // сообщаем серверу, что этот ник заходит через лаунчер
     if (CONFIG.guardSecret) {
@@ -274,6 +275,7 @@ ipcMain.handle('game:launch', async (_e, { username, ip, port }) => {
         '-Dminecraft.api.session.host=https://nope.invalid',
         '-Dminecraft.api.services.host=https://nope.invalid'
       ],
+      javaPath: CONFIG.javaPath || undefined,
       quickPlay: {
         // до 1.20 автоподключение работает через старые аргументы (legacy)
         type: parseInt(CONFIG.minecraftVersion.split('.')[1], 10) >= 20 ? 'multiplayer' : 'legacy',
