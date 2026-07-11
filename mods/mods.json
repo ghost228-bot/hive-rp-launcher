@@ -1,4 +1,24 @@
 {
   "mods": [
+    {
+      "name": "mcw-furniture.jar",
+      "url": "https://cdn.modrinth.com/data/dtWC90iB/versions/vugCAdky/mcw-furniture-3.4.1-mc1.16.5forge.jar"
+    },
+    {
+      "name": "mcw-doors.jar",
+      "url": "https://cdn.modrinth.com/data/kNxa8z3e/versions/21C1ifv8/mcw-doors-1.1.5-mc1.16.5forge.jar"
+    },
+    {
+      "name": "mcw-roofs.jar",
+      "url": "https://cdn.modrinth.com/data/B8jaH3P1/versions/CXKSEWRa/mcw-roofs-2.3.2-mc1.16.5forge.jar"
+    },
+    {
+      "name": "immersive-vehicles.jar",
+      "url": "https://cdn.modrinth.com/data/BCzBuhJ5/versions/MF6TQqUY/Immersive%20Vehicles-1.16.5-24.0.0.jar"
+    },
+    {
+      "name": "vehicles-content-pack.jar",
+      "url": "https://cdn.modrinth.com/data/C7TiPPJz/versions/SUw5Qg3y/MTS%20Official%20Pack-1.16.5-V29.jar"
+    }
   ]
 }
