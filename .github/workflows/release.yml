@@ -24,4 +24,20 @@ jobs:
       - run: mvn -B -f plugin/pom.xml package
       - uses: softprops/action-gh-release@v2
         with:
-          files: plugin/target/LauncherGuard.jar
+          files: plugin/target/LauncherGuard.jar  build-auroracore:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+      - name: Build AuroraCore
+        run: mvn -B package --file plugin/auroracore/pom.xml
+      - name: Upload to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: plugin/auroracore/target/AuroraCore.jar
