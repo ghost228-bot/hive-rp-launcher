@@ -234,6 +234,34 @@ async function syncMods() {
   }
 }
 
+
+/* ---------- поиск Java 8 (нужна для Forge 1.16.5) ---------- */
+function findJava8() {
+  if (CONFIG.javaPath) return CONFIG.javaPath;
+  const roots = [
+    'C:\\Program Files\\Eclipse Adoptium',
+    'C:\\Program Files\\Eclipse Foundation',
+    'C:\\Program Files\\AdoptOpenJDK',
+    'C:\\Program Files\\Java',
+    'C:\\Program Files (x86)\\Java',
+    'C:\\Program Files\\Zulu',
+    'C:\\Program Files\\Amazon Corretto'
+  ];
+  for (const root of roots) {
+    let dirs = [];
+    try { dirs = fs.readdirSync(root); } catch { continue; }
+    for (const dir of dirs) {
+      if (/(jdk|jre)[-_]?8u?|1\.8\.0/i.test(dir)) {
+        for (const exe of ['javaw.exe', 'java.exe']) {
+          const p = path.join(root, dir, 'bin', exe);
+          if (fs.existsSync(p)) return p;
+        }
+      }
+    }
+  }
+  return undefined; // возьмётся java из PATH
+}
+
 /* ---------- запуск игры ---------- */
 
 let launching = false;
@@ -275,7 +303,7 @@ ipcMain.handle('game:launch', async (_e, { username, ip, port }) => {
         '-Dminecraft.api.session.host=https://nope.invalid',
         '-Dminecraft.api.services.host=https://nope.invalid'
       ],
-      javaPath: CONFIG.javaPath || undefined,
+      javaPath: findJava8(),
       quickPlay: {
         // до 1.20 автоподключение работает через старые аргументы (legacy)
         type: parseInt(CONFIG.minecraftVersion.split('.')[1], 10) >= 20 ? 'multiplayer' : 'legacy',
