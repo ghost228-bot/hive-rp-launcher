@@ -1,0 +1,74 @@
+{
+  "serverName": "HIVE RP",
+  "serverIp": "srv11.vrhosting.su",
+  "serverPort": 25619,
+  "minecraftVersion": "1.16.5",
+  "loader": "vanilla",
+  "forgeInstallerUrl": "",
+  "modsManifestUrl": "",
+  "newsUrl": "",
+  "authApiUrl": "",
+  "defaultRamMb": 4096,
+  "discordUrl": "https://dsc.gg/hivegrief",
+  "siteUrl": "https://hivegrief.ru/",
+  "adminUsers": [
+    "ADMIN",
+    "F1stIf"
+  ],
+  "servers": [
+    {
+      "num": "01",
+      "name": "AURORA",
+      "emoji": "🌇",
+      "ip": "srv11.vrhosting.su",
+      "port": 25619,
+      "image": "img/srv1.svg"
+    }
+  ],
+  "socials": [
+    {
+      "type": "discord",
+      "title": "DISCORD",
+      "url": "https://dsc.gg/hivegrief"
+    },
+    {
+      "type": "site",
+      "title": "ОФИЦИАЛЬНЫЙ САЙТ",
+      "url": "https://hivegrief.ru/"
+    },
+    {
+      "type": "telegram",
+      "title": "TELEGRAM",
+      "url": "https://t.me/"
+    },
+    {
+      "type": "vk",
+      "title": "СООБЩЕСТВО ИГРОКОВ",
+      "url": "https://vk.com/"
+    },
+    {
+      "type": "youtube",
+      "title": "YOUTUBE",
+      "url": "https://youtube.com/"
+    }
+  ],
+  "media": [
+    {
+      "title": "Как начать играть",
+      "url": "https://hivegrief.ru/",
+      "thumb": "img/media1.svg"
+    },
+    {
+      "title": "Наш Discord — розыгрыши",
+      "url": "https://dsc.gg/hivegrief",
+      "thumb": "img/media2.svg"
+    },
+    {
+      "title": "Трейлер сервера",
+      "url": "https://hivegrief.ru/",
+      "thumb": "img/media3.svg"
+    }
+  ],
+  "guardPort": 8777,
+  "guardSecret": "65550c924d9b8a2a71e6cfa141f76ce2aa60f5f91264bb29"
+}

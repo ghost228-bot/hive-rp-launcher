@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3a0d0d"/>
+      <stop offset="1" stop-color="#141414"/>
+    </linearGradient>
+    <linearGradient id="fx" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#f4711f"/>
+      <stop offset="1" stop-color="#ffb340"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="360" fill="url(#bg)"/>
+  <g opacity=".18" stroke="url(#fx)" stroke-width="3">
+    <line x1="-40" y1="330" x2="700" y2="180"/>
+    <line x1="-40" y1="360" x2="700" y2="230"/>
+    <line x1="-40" y1="300" x2="700" y2="130"/>
+  </g>
+  <circle cx="560" cy="70" r="110" fill="#f4711f" opacity=".14"/>
+  <circle cx="80" cy="320" r="90" fill="#ffb340" opacity=".10"/>
+  <g transform="rotate(-6 320 190)">
+    <text x="320" y="205" text-anchor="middle" font-family="Arial Black, Arial" font-size="66"
+      font-weight="900" fill="#fff" letter-spacing="4">EMBER</text>
+    <text x="320" y="250" text-anchor="middle" font-family="Arial" font-size="20"
+      font-weight="700" fill="url(#fx)" letter-spacing="8">HIVE RP</text>
+  </g>
+</svg>

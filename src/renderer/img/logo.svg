@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffb340"/>
+      <stop offset=".5" stop-color="#f4711f"/>
+      <stop offset="1" stop-color="#e04e00"/>
+    </linearGradient>
+    <linearGradient id="t" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#f4711f" stop-opacity="0"/>
+      <stop offset="1" stop-color="#ffb340"/>
+    </linearGradient>
+  </defs>
+  <!-- хвост кометы -->
+  <path fill="url(#t)" d="M4 78 C30 66 52 60 78 56 L74 68 C50 72 28 78 4 86 Z"/>
+  <path fill="url(#t)" opacity=".6" d="M14 96 C38 88 54 84 76 80 L73 89 C52 93 34 97 14 102 Z"/>
+  <!-- звезда -->
+  <path fill="url(#g)" d="M78 18 L88 44 L116 46 L94 63 L102 90 L78 74 L54 90 L62 63 L40 46 L68 44 Z"/>
+  <path fill="#fff" opacity=".25" d="M78 18 L88 44 L116 46 L78 46 Z"/>
+</svg>

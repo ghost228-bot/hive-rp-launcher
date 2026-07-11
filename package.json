@@ -1,0 +1,31 @@
+{
+  "name": "hive-rp-launcher",
+  "version": "1.0.0",
+  "description": "Лаунчер HIVE RP в стиле GTA 5 RP",
+  "main": "src/main.js",
+  "author": "Maksim",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win",
+    "release": "electron-builder --win -p always"
+  },
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.3"
+  },
+  "dependencies": {
+    "minecraft-launcher-core": "^3.18.2",
+    "electron-updater": "^6.3.9"
+  },
+  "build": {
+    "appId": "ru.hivegrief.launcher",
+    "productName": "HIVE RP Launcher",
+    "win": { "target": "nsis" },
+    "nsis": { "oneClick": false, "allowToChangeInstallationDirectory": true },
+    "files": ["src/**/*", "config.json", "package.json"],
+    "publish": [
+      { "provider": "github", "owner": "ghost228-bot", "repo": "hive-rp-launcher" }
+    ]
+  }
+}
