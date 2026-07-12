@@ -3,6 +3,14 @@
     {
       "name": "journeymap.jar",
       "url": "https://cdn.modrinth.com/data/lfHFW1mp/versions/xwP89rOv/journeymap-1.16.5-5.8.6.jar"
+    },
+    {
+      "name": "rubidium.jar",
+      "url": "https://cdn.modrinth.com/data/4ZqxOvjD/versions/YDAuLUY8/rubidium-mc1.16.5-0.2.13.jar"
+    },
+    {
+      "name": "oculus.jar",
+      "url": "https://cdn.modrinth.com/data/GchcoXML/versions/SPCLqJn1/oculus-mc1.16.5-1.4.8.jar"
     }
   ]
 }

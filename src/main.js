@@ -295,6 +295,37 @@ async function installMapPack() {
   }
 }
 
+
+/* ---------- шейдеры (Oculus + шейдерпаки) ---------- */
+async function installShaderpacks() {
+  const packs = CONFIG.shaderpacks || [];
+  if (!packs.length) return;
+  const dir = path.join(GAME_DIR, 'shaderpacks');
+  fs.mkdirSync(dir, { recursive: true });
+  for (const p of packs) {
+    const dest = path.join(dir, p.name);
+    if (fs.existsSync(dest)) continue;
+    try {
+      send('status', 'Скачивание шейдеров: ' + p.name);
+      await downloadFile(p.url, dest);
+      log('шейдерпак установлен: ' + p.name);
+    } catch (e) {
+      log('шейдерпак не скачался (' + p.name + '): ' + e.message);
+    }
+  }
+  // включаем шейдер по умолчанию (только если игрок ещё не настраивал сам)
+  if (CONFIG.defaultShaderpack) {
+    const cfgDir = path.join(GAME_DIR, 'config');
+    fs.mkdirSync(cfgDir, { recursive: true });
+    const oculusCfg = path.join(cfgDir, 'oculus.properties');
+    if (!fs.existsSync(oculusCfg)) {
+      fs.writeFileSync(oculusCfg,
+        'enableShaders=true\nshaderPack=' + CONFIG.defaultShaderpack + '\n');
+      log('шейдер включён по умолчанию: ' + CONFIG.defaultShaderpack);
+    }
+  }
+}
+
 /* ---------- поиск Java 8 (нужна для Forge 1.16.5) ---------- */
 function findJava8() {
   if (CONFIG.javaPath) return CONFIG.javaPath;
@@ -333,6 +364,7 @@ ipcMain.handle('game:launch', async (_e, { username, ip, port }) => {
     try { await syncMods(); }
     catch (e) { send('status', 'Список модов недоступен, запускаем без проверки...'); }
     await installMapPack();
+    await installShaderpacks();
 
     // авторизация на сервере: пропуск выдаётся только с верным паролем
     if (CONFIG.guardSecret) {
