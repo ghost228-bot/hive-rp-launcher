@@ -3,6 +3,7 @@ const $ = id => document.getElementById(id);
 let config = null;
 let currentUser = null;
 let mode = 'login';
+let pendingPlayServer = false;
 let newsCache = [];
 let selPic = 'img/news1.svg';
 
@@ -32,8 +33,7 @@ function isAdmin() { return !!(currentUser && (config.adminUsers || []).some(a =
   document.querySelectorAll('.sh-bg').forEach(el => el.style.backgroundImage = `url('${ms.image}')`);
 
   const sess = await window.launcher.getSession();
-  if (sess && sess.username) { setUser(sess.username); hideLoginScreen(); }
-  else showLoginScreen();
+  if (sess && sess.username) setUser(sess.username);
 
   renderServers();
   renderSocials();
@@ -74,7 +74,10 @@ $('btn-settings').onclick = () => $('modal-settings').classList.remove('hidden')
 $('btn-login-open').onclick = () => showLoginScreen();
 document.addEventListener('keydown', e => {
   if (e.key === 'Enter' && !$('login-screen').classList.contains('hidden')) doAuth();
-  if (e.key === 'Escape') document.querySelectorAll('.modal-wrap').forEach(m => m.classList.add('hidden'));
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-wrap').forEach(m => m.classList.add('hidden'));
+    if (!$('login-screen').classList.contains('hidden')) { pendingPlayServer = false; hideLoginScreen(); }
+  }
 });
 
 /* ---------- аккаунт (полноэкранный вход) ---------- */
@@ -98,6 +101,7 @@ $('ls-tab-register').onclick = () => setMode('register');
 $('ls-submit').onclick = doAuth;
 $('ls-min').onclick = () => window.launcher.minimize();
 $('ls-close').onclick = () => window.launcher.close();
+$('ls-back') && ($('ls-back').onclick = () => { pendingPlayServer = false; hideLoginScreen(); });
 
 async function doAuth() {
   const u = $('ls-username').value.trim();
@@ -118,6 +122,11 @@ async function doAuth() {
   $('ls-password2').value = '';
   setUser(res.username);
   hideLoginScreen();
+  if (pendingPlayServer !== undefined && pendingPlayServer !== false) {
+    const srv = pendingPlayServer;
+    pendingPlayServer = false;
+    play(srv || undefined);
+  }
 }
 
 async function renderLoginNews() {
@@ -308,7 +317,7 @@ function setPlayState(running) {
   });
 }
 async function play(server) {
-  if (!currentUser) { showLoginScreen(); return; }
+  if (!currentUser) { pendingPlayServer = server || null; showLoginScreen(); return; }
   const s = server && server.ip ? server : mainServer();
   openPage('home');
   setPlayState(true);
