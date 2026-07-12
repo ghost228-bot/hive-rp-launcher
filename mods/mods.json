@@ -1,36 +1,8 @@
 {
   "mods": [
     {
-      "name": "macaws-furniture.jar",
-      "url": "https://cdn.modrinth.com/data/dtWC90iB/versions/vugCAdky/mcw-furniture-3.4.1-mc1.16.5forge.jar"
-    },
-    {
-      "name": "macaws-doors.jar",
-      "url": "https://cdn.modrinth.com/data/kNxa8z3e/versions/21C1ifv8/mcw-doors-1.1.5-mc1.16.5forge.jar"
-    },
-    {
-      "name": "macaws-windows.jar",
-      "url": "https://cdn.modrinth.com/data/C7I0BCni/versions/IfFolNE8/mcw-mcwwindows-2.4.2-mc1.16.5forge.jar"
-    },
-    {
-      "name": "macaws-roofs.jar",
-      "url": "https://cdn.modrinth.com/data/B8jaH3P1/versions/CXKSEWRa/mcw-roofs-2.3.2-mc1.16.5forge.jar"
-    },
-    {
-      "name": "securitycraft.jar",
-      "url": "https://cdn.modrinth.com/data/v8jzRtAt/versions/OqaBW69b/%5B1.16.5%5D%20SecurityCraft%20v1.10.1.jar"
-    },
-    {
       "name": "journeymap.jar",
       "url": "https://cdn.modrinth.com/data/lfHFW1mp/versions/xwP89rOv/journeymap-1.16.5-5.8.6.jar"
-    },
-    {
-      "name": "immersive-vehicles.jar",
-      "url": "https://cdn.modrinth.com/data/BCzBuhJ5/versions/MF6TQqUY/Immersive%20Vehicles-1.16.5-24.0.0.jar"
-    },
-    {
-      "name": "vehicles-content-pack.jar",
-      "url": "https://cdn.modrinth.com/data/C7TiPPJz/versions/SUw5Qg3y/MTS%20Official%20Pack-1.16.5-V29.jar"
     }
   ]
 }

@@ -266,6 +266,35 @@ async function syncMods() {
 }
 
 
+
+/* ---------- предзагруженная карта (JourneyMap) ----------
+   map.zip = запакованная папка journeymap (полностью отрисованный город).
+   Качается один раз; чтобы обновить у всех — подними mapPackVersion в config.json. */
+async function installMapPack() {
+  if (!CONFIG.mapPackUrl) return;
+  const marker = path.join(GAME_DIR, '.mappack');
+  const have = readJson(marker, null);
+  if (have && have.version === CONFIG.mapPackVersion) return;
+  try {
+    send('status', 'Скачивание карты города...');
+    const zipPath = path.join(DATA_DIR, 'map.zip');
+    await downloadFile(CONFIG.mapPackUrl, zipPath, p => send('progress', { value: p }));
+    send('status', 'Распаковка карты...');
+    await new Promise((resolve, reject) => {
+      const { execFile } = require('child_process');
+      execFile('powershell', ['-NoProfile', '-Command',
+        `Expand-Archive -LiteralPath "${zipPath}" -DestinationPath "${GAME_DIR}" -Force`],
+        err => err ? reject(err) : resolve());
+    });
+    fs.unlinkSync(zipPath);
+    writeJson(marker, { version: CONFIG.mapPackVersion, at: Date.now() });
+    log('карта города установлена, версия ' + CONFIG.mapPackVersion);
+  } catch (e) {
+    log('карта города не установилась: ' + e.message);
+    /* не критично — JourneyMap отрисует сам */
+  }
+}
+
 /* ---------- поиск Java 8 (нужна для Forge 1.16.5) ---------- */
 function findJava8() {
   if (CONFIG.javaPath) return CONFIG.javaPath;
@@ -303,6 +332,7 @@ ipcMain.handle('game:launch', async (_e, { username, ip, port }) => {
   try {
     try { await syncMods(); }
     catch (e) { send('status', 'Список модов недоступен, запускаем без проверки...'); }
+    await installMapPack();
 
     // авторизация на сервере: пропуск выдаётся только с верным паролем
     if (CONFIG.guardSecret) {
