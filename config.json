@@ -76,9 +76,13 @@
   "mapPackVersion": "1",
   "shaderpacks": [
     {
+      "name": "ComplementaryShaders_v4.7.2.zip",
+      "url": "https://cdn.modrinth.com/data/R6NEzAwj/versions/G16NNnV9/ComplementaryShaders_v4.7.2.zip"
+    },
+    {
       "name": "BSL_v10.1.1.zip",
       "url": "https://cdn.modrinth.com/data/Q1vvjJYV/versions/NDEQ77pU/BSL_v10.1.1.zip"
     }
   ],
-  "defaultShaderpack": "BSL_v10.1.1.zip"
+  "defaultShaderpack": "ComplementaryShaders_v4.7.2.zip"
 }

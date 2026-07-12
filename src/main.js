@@ -318,11 +318,20 @@ async function installShaderpacks() {
     const cfgDir = path.join(GAME_DIR, 'config');
     fs.mkdirSync(cfgDir, { recursive: true });
     const oculusCfg = path.join(cfgDir, 'oculus.properties');
-    if (!fs.existsSync(oculusCfg)) {
+    const markerF = path.join(GAME_DIR, '.shaderdefault');
+    const prevDefault = fs.existsSync(markerF) ? fs.readFileSync(markerF, 'utf8').trim() : null;
+    let write = false;
+    if (!fs.existsSync(oculusCfg)) write = true;
+    else if (prevDefault && prevDefault !== CONFIG.defaultShaderpack) {
+      const cur = fs.readFileSync(oculusCfg, 'utf8');
+      if (cur.includes('shaderPack=' + prevDefault)) write = true; // игрок не менял сам
+    }
+    if (write) {
       fs.writeFileSync(oculusCfg,
         'enableShaders=true\nshaderPack=' + CONFIG.defaultShaderpack + '\n');
-      log('шейдер включён по умолчанию: ' + CONFIG.defaultShaderpack);
+      log('шейдер по умолчанию: ' + CONFIG.defaultShaderpack);
     }
+    fs.writeFileSync(markerF, CONFIG.defaultShaderpack);
   }
 }
 
