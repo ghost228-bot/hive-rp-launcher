@@ -1,6 +1,6 @@
 name: AuroraCore
 main: ru.hivegrief.auroracore.AuroraCore
-version: 1.0.0
+version: 1.2.0
 api-version: "1.16"
 author: HIVE RP
 softdepend: [SkinsRestorer, Citizens]

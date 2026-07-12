@@ -21,6 +21,7 @@ public class CreationManager {
         public Stage stage = Stage.INTRO;
         public CharacterData draft = new CharacterData();
         public int page = 0;
+        public int skinIdx = 0;
     }
 
     private final AuroraCore pl;
@@ -157,6 +158,7 @@ public class CreationManager {
                 s.draft = new CharacterData();
                 s.draft.nick = p.getName();
                 s.page = 0;
+                s.skinIdx = 0;
                 s.stage = Stage.GENDER;
                 pl.menus().openGender(p);
             }
@@ -202,15 +204,76 @@ public class CreationManager {
             }
             s.draft.age = age;
             Util.sound(p, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f);
-            s.stage = Stage.SKIN;
-            Util.title(p, Util.WHITE + "Внешность", Util.GRAY + "Выберите внешность персонажа", 10, 40, 10);
-            // манекен появляется сразу с первой внешностью каталога
-            List<String[]> list = pl.menus().skins(pl, s.draft.gender);
-            if (!list.isEmpty()) {
-                s.draft.skin = list.get(0)[1];
-                if (pl.preview() != null) pl.preview().show(p, s.draft.skin);
-            }
-            pl.menus().openSkins(pl, p, s.draft, 0);
+            enterSkinStage(p, s);
+        }
+    }
+
+    public void enterSkinStage(Player p, Session s) {
+        s.stage = Stage.SKIN;
+        s.skinIdx = 0;
+        Util.title(p, Util.WHITE + "Внешность", Util.GRAY + "Листайте стрелками, смотрите на манекен", 10, 60, 10);
+        p.closeInventory();
+        applySkinIdx(p, s);
+        giveSkinHotbar(p, s);
+    }
+
+    private void giveSkinHotbar(Player p, Session s) {
+        List<String[]> list = pl.menus().skins(pl, s.draft.gender);
+        org.bukkit.inventory.PlayerInventory inv = p.getInventory();
+        inv.clear();
+        inv.setItem(2, named(org.bukkit.Material.ARROW, Util.ORANGE + "\u27F5 Предыдущая", "ПКМ — листать назад"));
+        inv.setItem(4, skinInfoItem(s, list));
+        inv.setItem(6, named(org.bukkit.Material.ARROW, Util.ORANGE + "Следующая \u27F6", "ПКМ — листать вперёд"));
+        inv.setItem(8, named(org.bukkit.Material.EMERALD, "\u00A7a\u00A7lПодтвердить внешность", "ПКМ — выбрать эту внешность"));
+        p.getInventory().setHeldItemSlot(4);
+    }
+
+    private org.bukkit.inventory.ItemStack skinInfoItem(Session s, List<String[]> list) {
+        String disp = list.isEmpty() ? "-" : list.get(s.skinIdx)[0];
+        return named(org.bukkit.Material.PAPER, Util.ORANGE + "Внешность: " + Util.WHITE + disp
+                + Util.GRAY + " (" + (s.skinIdx + 1) + "/" + Math.max(1, list.size()) + ")", "Смотрите на манекен");
+    }
+
+    private static org.bukkit.inventory.ItemStack named(org.bukkit.Material m, String name, String lore) {
+        org.bukkit.inventory.ItemStack it = new org.bukkit.inventory.ItemStack(m);
+        org.bukkit.inventory.meta.ItemMeta meta = it.getItemMeta();
+        meta.setDisplayName(name);
+        meta.setLore(java.util.Collections.singletonList(Util.GRAY + lore));
+        it.setItemMeta(meta);
+        return it;
+    }
+
+    private void applySkinIdx(Player p, Session s) {
+        List<String[]> list = pl.menus().skins(pl, s.draft.gender);
+        if (list.isEmpty()) return;
+        if (s.skinIdx < 0) s.skinIdx = list.size() - 1;
+        if (s.skinIdx >= list.size()) s.skinIdx = 0;
+        String[] e = list.get(s.skinIdx);
+        s.draft.skin = e[1];
+        if (pl.preview() != null) pl.preview().show(p, e[1]);
+        Util.action(p, Util.ORANGE + "Внешность: " + Util.WHITE + e[0]);
+    }
+
+    /** ПКМ предметами хотбара на стадии выбора внешности */
+    public void hotbarClick(Player p, int slot) {
+        Session s = get(p);
+        if (s == null || s.stage != Stage.SKIN) return;
+        List<String[]> list = pl.menus().skins(pl, s.draft.gender);
+        if (slot == 2) {
+            s.skinIdx--;
+            applySkinIdx(p, s);
+            Util.sound(p, Sound.ITEM_BOOK_PAGE_TURN, 1f);
+            p.getInventory().setItem(4, skinInfoItem(s, list));
+        } else if (slot == 6) {
+            s.skinIdx++;
+            applySkinIdx(p, s);
+            Util.sound(p, Sound.ITEM_BOOK_PAGE_TURN, 1f);
+            p.getInventory().setItem(4, skinInfoItem(s, list));
+        } else if (slot == 8) {
+            Util.sound(p, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.3f);
+            p.getInventory().clear();
+            s.stage = Stage.CONFIRM;
+            pl.menus().openConfirm(pl, p, s.draft);
         }
     }
 

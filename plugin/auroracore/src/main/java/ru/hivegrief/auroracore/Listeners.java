@@ -96,6 +96,18 @@ public class Listeners implements Listener {
         }
     }
 
+    /* --- хотбар выбора внешности --- */
+    @EventHandler
+    public void onInteract(org.bukkit.event.player.PlayerInteractEvent e) {
+        Player p = e.getPlayer();
+        if (!pl.creation().in(p)) return;
+        e.setCancelled(true);
+        if (e.getAction() == org.bukkit.event.block.Action.RIGHT_CLICK_AIR
+                || e.getAction() == org.bukkit.event.block.Action.RIGHT_CLICK_BLOCK) {
+            pl.creation().hotbarClick(p, p.getInventory().getHeldItemSlot());
+        }
+    }
+
     /* --- меню --- */
     @EventHandler
     public void onClick(InventoryClickEvent e) {
@@ -136,8 +148,7 @@ public class Listeners implements Listener {
                     pl.menus().openGender(p);
                     break;
                 case SKIN:
-                    pl.menus().openSkins(pl, p, ss.draft, ss.page);
-                    break;
+                    break; // выбор внешности идёт хотбаром, меню нет
                 case CONFIRM:
                     pl.menus().openConfirm(pl, p, ss.draft);
                     break;
