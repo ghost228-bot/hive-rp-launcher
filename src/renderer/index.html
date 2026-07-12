@@ -7,6 +7,71 @@
 </head>
 <body>
 
+
+<!-- ===== полноэкранный вход (как в GTA5RP) ===== -->
+<div id="login-screen" class="hidden">
+  <div class="ls-drag"></div>
+  <div class="ls-winbtns">
+    <button id="ls-min">─</button>
+    <button id="ls-close" class="close">✕</button>
+  </div>
+
+  <div class="ls-art">
+    <svg viewBox="0 0 420 900" preserveAspectRatio="xMidYMax slice">
+      <defs>
+        <pattern id="hexes" width="52" height="60" patternUnits="userSpaceOnUse" patternTransform="scale(1.1)">
+          <path d="M26 2 48 15v26L26 54 4 41V15z" fill="none" stroke="rgba(255,122,0,.28)" stroke-width="2"/>
+        </pattern>
+        <linearGradient id="panel" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#2a1602"/><stop offset="1" stop-color="#120a02"/>
+        </linearGradient>
+        <linearGradient id="suit" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#ff8a1e"/><stop offset="1" stop-color="#c85f00"/>
+        </linearGradient>
+      </defs>
+      <polygon points="0,0 420,0 320,900 0,900" fill="url(#panel)"/>
+      <polygon points="0,0 420,0 320,900 0,900" fill="url(#hexes)"/>
+      <!-- стилизованный персонаж -->
+      <g transform="translate(60,270)">
+        <ellipse cx="120" cy="600" rx="130" ry="26" fill="rgba(0,0,0,.45)"/>
+        <path d="M55 590 65 330q-14-70 8-118l38-38h78l38 38q22 48 8 118l10 260h-42l-16-210h-64l-16 210z" fill="#1c1c22"/>
+        <path d="M73 212q-30 16-38 66l-14 96 30 8 22-96zM167 212q30 16 38 66l14 96-30 8-22-96z" fill="url(#suit)"/>
+        <path d="M78 190q-10 60 42 78 52-18 42-78l-8-26H86z" fill="url(#suit)"/>
+        <rect x="96" y="120" width="48" height="52" rx="14" fill="#e8b98a"/>
+        <path d="M88 118q-6-58 52-58t52 58q0 18-10 26-6-40-42-40t-42 40q-10-8-10-26z" fill="#141418"/>
+        <path d="M60 330h120v26H60z" fill="#0d0d10"/>
+      </g>
+    </svg>
+  </div>
+
+  <div class="ls-center">
+    <div class="ls-logo">
+      <img src="img/logo.svg" alt="">
+      <div class="ls-brand"><span>HIVE</span> RP <small>AURORA</small></div>
+    </div>
+    <div class="ls-tabs">
+      <button id="ls-tab-register" class="ls-tab">Регистрация</button>
+      <button id="ls-tab-login" class="ls-tab active">Авторизация</button>
+    </div>
+    <label class="ls-field">
+      <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 12a4.5 4.5 0 1 0-4.5-4.5A4.5 4.5 0 0 0 12 12zm0 2.2c-3.6 0-8 1.8-8 4.4V21h16v-2.4c0-2.6-4.4-4.4-8-4.4z"/></svg>
+      <input id="ls-username" type="text" placeholder="Игровой ник" maxlength="16" autocomplete="off">
+    </label>
+    <label class="ls-field">
+      <svg viewBox="0 0 24 24"><path fill="currentColor" d="M17 9V7a5 5 0 0 0-10 0v2H5v12h14V9zm-8 0V7a3 3 0 0 1 6 0v2z"/></svg>
+      <input id="ls-password" type="password" placeholder="Пароль">
+    </label>
+    <label class="ls-field hidden" id="ls-password2-wrap">
+      <svg viewBox="0 0 24 24"><path fill="currentColor" d="M17 9V7a5 5 0 0 0-10 0v2H5v12h14V9zm-8 0V7a3 3 0 0 1 6 0v2z"/></svg>
+      <input id="ls-password2" type="password" placeholder="Повтори пароль">
+    </label>
+    <button id="ls-submit" class="ls-btn">Войти</button>
+    <div class="ls-error" id="ls-error"></div>
+  </div>
+
+  <div class="ls-news" id="ls-news"></div>
+</div>
+
 <div class="app">
 
   <!-- ===== сайдбар ===== -->
@@ -138,23 +203,6 @@
   </main>
 </div>
 
-<!-- модалка входа -->
-<div class="modal-wrap hidden" id="modal-auth">
-  <div class="modal">
-    <button class="modal-x" data-close="modal-auth">✕</button>
-    <img class="m-logo" src="img/logo.svg" alt="">
-    <h2 id="auth-title">Вход в аккаунт</h2>
-    <div class="tabs">
-      <button id="tab-login" class="tab active">Вход</button>
-      <button id="tab-register" class="tab">Регистрация</button>
-    </div>
-    <input id="auth-username" type="text" placeholder="Игровой ник" maxlength="16" autocomplete="off">
-    <input id="auth-password" type="password" placeholder="Пароль">
-    <input id="auth-password2" type="password" placeholder="Повтори пароль" class="hidden">
-    <div class="auth-error" id="auth-error"></div>
-    <button class="btn-play wide" id="btn-auth">ВОЙТИ</button>
-  </div>
-</div>
 
 <!-- модалка настроек -->
 <div class="modal-wrap hidden" id="modal-settings">

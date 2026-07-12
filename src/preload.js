@@ -10,6 +10,8 @@ contextBridge.exposeInMainWorld('launcher', {
   setSettings: s => ipcRenderer.invoke('settings:set', s),
 
   register: (username, password) => ipcRenderer.invoke('auth:register', { username, password }),
+  getSession: () => ipcRenderer.invoke('auth:session'),
+  logout: () => ipcRenderer.invoke('auth:logout'),
   login: (username, password) => ipcRenderer.invoke('auth:login', { username, password }),
 
   launch: (username, ip, port) => ipcRenderer.invoke('game:launch', { username, ip, port }),

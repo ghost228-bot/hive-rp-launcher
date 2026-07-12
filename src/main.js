@@ -14,6 +14,7 @@ const DATA_DIR = path.join(app.getPath('appData'), '.rp-launcher');
 const GAME_DIR = path.join(DATA_DIR, 'minecraft');
 const USERS_FILE = path.join(DATA_DIR, 'users.json');
 const SETTINGS_FILE = path.join(DATA_DIR, 'settings.json');
+const SESSION_FILE = path.join(DATA_DIR, 'session.json');
 const NEWS_FILE = path.join(DATA_DIR, 'news.json');
 
 fs.mkdirSync(GAME_DIR, { recursive: true });
@@ -131,65 +132,84 @@ ipcMain.handle('config:get', () => CONFIG);
 ipcMain.handle('settings:get', () => readJson(SETTINGS_FILE, { ramMb: CONFIG.defaultRamMb }));
 ipcMain.handle('settings:set', (_e, s) => { writeJson(SETTINGS_FILE, s); return true; });
 
-/* ---------- аккаунты ----------
-   Если в config.json задан authApiUrl — регистрация/вход идут через ваш сайт
-   (POST /register и /login с {username, password}).
-   Иначе аккаунты хранятся локально (пароль — как sha256-хеш). */
+/* ---------- аккаунты (серверная регистрация через LauncherGuard) ---------- */
 
-async function apiAuth(endpoint, username, password) {
-  const url = CONFIG.authApiUrl.replace(/\/$/, '') + '/' + endpoint;
+const GUARD_ERR = {
+  nick_taken: 'Ник уже занят',
+  wrong_password: 'Неверный пароль',
+  not_found: 'Аккаунт не найден. Зарегистрируйся',
+  bad_nick: 'Ник: 3–16 символов, латиница, цифры, _',
+  bad_password: 'Пароль: от 4 до 64 символов',
+  password_required: 'Обнови лаунчер',
+  bad_secret: 'Ошибка конфигурации лаунчера',
+  bad_nick_case: 'Неверный регистр ника'
+};
+
+let creds = null; // { username, password } на время сессии
+
+function guardApi(endpoint, params) {
+  const qs = Object.entries(params)
+    .map(([k, v]) => k + '=' + encodeURIComponent(v)).join('&');
+  const url = `http://${CONFIG.serverIp}:${CONFIG.guardPort}/${endpoint}?${qs}&secret=${encodeURIComponent(CONFIG.guardSecret)}`;
   return new Promise((resolve, reject) => {
-    const lib = url.startsWith('https') ? https : http;
-    const body = JSON.stringify({ username, password });
-    const req = lib.request(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) }
-    }, res => {
-      let data = '';
-      res.on('data', c => (data += c));
-      res.on('end', () => {
-        try {
-          const j = JSON.parse(data);
-          res.statusCode === 200 ? resolve(j) : reject(new Error(j.error || 'Ошибка сервера'));
-        } catch { reject(new Error('Некорректный ответ сервера')); }
-      });
+    const req = http.get(url, { timeout: 8000 }, res => {
+      let d = ''; res.on('data', c => d += c);
+      res.on('end', () => { try { resolve(JSON.parse(d)); } catch { reject(new Error('bad_response')); } });
     });
+    req.on('timeout', () => { req.destroy(); reject(new Error('timeout')); });
     req.on('error', reject);
-    req.write(body);
-    req.end();
   });
+}
+
+function saveSession(username, password) {
+  writeJson(SESSION_FILE, { username, p: Buffer.from(password, 'utf8').toString('base64') });
+}
+function loadSession() {
+  const s = readJson(SESSION_FILE, null);
+  if (!s || !s.username || !s.p) return null;
+  return { username: s.username, password: Buffer.from(s.p, 'base64').toString('utf8') };
 }
 
 ipcMain.handle('auth:register', async (_e, { username, password }) => {
   if (!/^[A-Za-z0-9_]{3,16}$/.test(username))
-    return { ok: false, error: 'Ник: 3–16 символов, латиница, цифры, _' };
+    return { ok: false, error: GUARD_ERR.bad_nick };
   if (password.length < 6)
     return { ok: false, error: 'Пароль минимум 6 символов' };
-
-  if (CONFIG.authApiUrl) {
-    try { await apiAuth('register', username, password); }
-    catch (e) { return { ok: false, error: e.message }; }
-  } else {
-    const users = readJson(USERS_FILE, {});
-    if (users[username.toLowerCase()]) return { ok: false, error: 'Ник уже занят' };
-    users[username.toLowerCase()] = { username, hash: sha256(password), created: Date.now() };
-    writeJson(USERS_FILE, users);
+  try {
+    const r = await guardApi('register', { nick: username, pass: password });
+    if (!r.ok) return { ok: false, error: GUARD_ERR[r.error] || 'Ошибка сервера' };
+  } catch (e) {
+    return { ok: false, error: 'Сервер недоступен, попробуй позже' };
   }
+  creds = { username, password };
+  saveSession(username, password);
   return { ok: true, username };
 });
 
 ipcMain.handle('auth:login', async (_e, { username, password }) => {
-  if (CONFIG.authApiUrl) {
-    try { await apiAuth('login', username, password); }
-    catch (e) { return { ok: false, error: e.message }; }
-  } else {
-    const users = readJson(USERS_FILE, {});
-    const u = users[username.toLowerCase()];
-    if (!u || u.hash !== sha256(password))
-      return { ok: false, error: 'Неверный ник или пароль' };
-    username = u.username;
+  try {
+    const r = await guardApi('login', { nick: username, pass: password });
+    if (!r.ok) return { ok: false, error: GUARD_ERR[r.error] || 'Ошибка сервера' };
+    username = r.nick || username;
+  } catch (e) {
+    return { ok: false, error: 'Сервер недоступен, попробуй позже' };
   }
+  creds = { username, password };
+  saveSession(username, password);
   return { ok: true, username };
+});
+
+ipcMain.handle('auth:session', async () => {
+  const s = loadSession();
+  if (!s) return null;
+  creds = s;
+  return { username: s.username };
+});
+
+ipcMain.handle('auth:logout', async () => {
+  creds = null;
+  try { fs.unlinkSync(SESSION_FILE); } catch {}
+  return true;
 });
 
 /* ---------- моды ----------
@@ -273,13 +293,23 @@ ipcMain.handle('game:launch', async (_e, { username, ip, port }) => {
     try { await syncMods(); }
     catch (e) { send('status', 'Список модов недоступен, запускаем без проверки...'); }
 
-    // сообщаем серверу, что этот ник заходит через лаунчер
+    // авторизация на сервере: пропуск выдаётся только с верным паролем
     if (CONFIG.guardSecret) {
       send('status', 'Авторизация на сервере...');
-      try {
-        await fetchText(`http://${ip || CONFIG.serverIp}:${CONFIG.guardPort || 8777}` +
-          `/allow?nick=${encodeURIComponent(username)}&secret=${encodeURIComponent(CONFIG.guardSecret)}`);
-      } catch (e) { /* если плагин ещё не установлен — просто продолжаем */ }
+      if (creds && creds.username === username) {
+        try {
+          const r = await guardApi('allow', { nick: username, pass: creds.password });
+          if (!r.ok) {
+            launching = false;
+            return { ok: false, error: GUARD_ERR[r.error] || 'Сервер отклонил вход' };
+          }
+        } catch (e) { /* сервер недоступен — пробуем зайти, кикнет с понятным сообщением */ }
+      } else {
+        try {
+          await fetchText(`http://${ip || CONFIG.serverIp}:${CONFIG.guardPort || 8777}` +
+            `/allow?nick=${encodeURIComponent(username)}&secret=${encodeURIComponent(CONFIG.guardSecret)}`);
+        } catch (e) {}
+      }
     }
 
     const settings = readJson(SETTINGS_FILE, { ramMb: CONFIG.defaultRamMb });

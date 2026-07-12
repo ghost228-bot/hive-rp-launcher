@@ -31,8 +31,9 @@ function isAdmin() { return !!(currentUser && (config.adminUsers || []).some(a =
   $('sh-name2').textContent = ms.name;
   document.querySelectorAll('.sh-bg').forEach(el => el.style.backgroundImage = `url('${ms.image}')`);
 
-  const saved = localStorage.getItem('rp_user');
-  if (saved) setUser(saved);
+  const sess = await window.launcher.getSession();
+  if (sess && sess.username) { setUser(sess.username); hideLoginScreen(); }
+  else showLoginScreen();
 
   renderServers();
   renderSocials();
@@ -70,45 +71,65 @@ document.querySelectorAll('.modal-x').forEach(b => {
   b.onclick = () => $(b.dataset.close).classList.add('hidden');
 });
 $('btn-settings').onclick = () => $('modal-settings').classList.remove('hidden');
-$('btn-login-open').onclick = () => $('modal-auth').classList.remove('hidden');
+$('btn-login-open').onclick = () => showLoginScreen();
 document.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && !$('modal-auth').classList.contains('hidden')) doAuth();
+  if (e.key === 'Enter' && !$('login-screen').classList.contains('hidden')) doAuth();
   if (e.key === 'Escape') document.querySelectorAll('.modal-wrap').forEach(m => m.classList.add('hidden'));
 });
 
-/* ---------- аккаунт ---------- */
+/* ---------- аккаунт (полноэкранный вход) ---------- */
+function showLoginScreen() {
+  $('login-screen').classList.remove('hidden');
+  $('ls-error').textContent = '';
+  renderLoginNews();
+}
+function hideLoginScreen() { $('login-screen').classList.add('hidden'); }
+
 function setMode(m) {
   mode = m;
-  $('tab-login').classList.toggle('active', m === 'login');
-  $('tab-register').classList.toggle('active', m === 'register');
-  $('auth-password2').classList.toggle('hidden', m === 'login');
-  $('auth-title').textContent = m === 'login' ? 'Вход в аккаунт' : 'Регистрация';
-  $('btn-auth').textContent = m === 'login' ? 'ВОЙТИ' : 'СОЗДАТЬ АККАУНТ';
-  $('auth-error').textContent = '';
+  $('ls-tab-login').classList.toggle('active', m === 'login');
+  $('ls-tab-register').classList.toggle('active', m === 'register');
+  $('ls-password2-wrap').classList.toggle('hidden', m === 'login');
+  $('ls-submit').textContent = m === 'login' ? 'Войти' : 'Создать аккаунт';
+  $('ls-error').textContent = '';
 }
-$('tab-login').onclick = () => setMode('login');
-$('tab-register').onclick = () => setMode('register');
-$('btn-auth').onclick = doAuth;
+$('ls-tab-login').onclick = () => setMode('login');
+$('ls-tab-register').onclick = () => setMode('register');
+$('ls-submit').onclick = doAuth;
+$('ls-min').onclick = () => window.launcher.minimize();
+$('ls-close').onclick = () => window.launcher.close();
 
 async function doAuth() {
-  const u = $('auth-username').value.trim();
-  const p = $('auth-password').value;
-  const err = $('auth-error');
+  const u = $('ls-username').value.trim();
+  const p = $('ls-password').value;
+  const err = $('ls-error');
   err.textContent = '';
   if (!u || !p) { err.textContent = 'Заполни все поля'; return; }
-  if (mode === 'register' && p !== $('auth-password2').value) {
+  if (mode === 'register' && p !== $('ls-password2').value) {
     err.textContent = 'Пароли не совпадают'; return;
   }
-  $('btn-auth').disabled = true;
+  $('ls-submit').disabled = true;
   const res = mode === 'login'
     ? await window.launcher.login(u, p)
     : await window.launcher.register(u, p);
-  $('btn-auth').disabled = false;
+  $('ls-submit').disabled = false;
   if (!res.ok) { err.textContent = res.error; return; }
-  localStorage.setItem('rp_user', res.username);
-  $('modal-auth').classList.add('hidden');
-  $('auth-password').value = '';
+  $('ls-password').value = '';
+  $('ls-password2').value = '';
   setUser(res.username);
+  hideLoginScreen();
+}
+
+async function renderLoginNews() {
+  try {
+    const list = newsCache.length ? newsCache : await window.launcher.getNews();
+    $('ls-news').innerHTML = list.slice(0, 3).map(n => `
+      <div class="lsn-card">
+        <div class="lsn-img" style="background-image:url('${esc(n.image || 'img/news1.svg')}')"></div>
+        ${n.date ? `<div class="lsn-date">${esc(n.date)}</div>` : ''}
+        <div class="lsn-title">${esc(n.title)}</div>
+      </div>`).join('');
+  } catch { /* новости не критичны */ }
 }
 
 function setUser(username) {
@@ -120,13 +141,14 @@ function setUser(username) {
   $('btn-add-news').classList.toggle('hidden', !isAdmin());
   loadNews();
 }
-$('btn-logout').onclick = () => {
-  localStorage.removeItem('rp_user');
+$('btn-logout').onclick = async () => {
+  await window.launcher.logout();
   currentUser = null;
   $('side-user').classList.add('hidden');
   $('btn-login-open').classList.remove('hidden');
   $('btn-add-news').classList.add('hidden');
   loadNews();
+  showLoginScreen();
 };
 
 /* ---------- сервера ---------- */
@@ -286,7 +308,7 @@ function setPlayState(running) {
   });
 }
 async function play(server) {
-  if (!currentUser) { $('modal-auth').classList.remove('hidden'); return; }
+  if (!currentUser) { showLoginScreen(); return; }
   const s = server && server.ip ? server : mainServer();
   openPage('home');
   setPlayState(true);
