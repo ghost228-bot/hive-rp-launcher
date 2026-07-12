@@ -1,6 +1,5 @@
 name: LauncherGuard
-version: 1.0.0
 main: ru.hivegrief.launcherguard.LauncherGuard
-api-version: 1.16
+version: 1.1.0
+api-version: "1.16"
 author: HIVE RP
-description: Puskaet na server tolko igrokov iz launchera
