@@ -73,7 +73,7 @@
   "guardSecret": "65550c924d9b8a2a71e6cfa141f76ce2aa60f5f91264bb29",
   "javaPath": "",
   "mapPackUrl": "https://github.com/ghost228-bot/hive-rp-launcher/releases/download/map/map.zip",
-  "mapPackVersion": "1",
+  "mapPackVersion": "2",
   "shaderpacks": [
     {
       "name": "ComplementaryShaders_v4.7.2.zip",
