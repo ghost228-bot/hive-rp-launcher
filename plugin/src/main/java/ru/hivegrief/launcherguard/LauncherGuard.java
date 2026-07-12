@@ -31,7 +31,6 @@ public class LauncherGuard extends JavaPlugin implements Listener {
     }
 
     private static final Pattern NICK = Pattern.compile("^[A-Za-z0-9_]{3,16}$");
-    private static final long PASS_TTL = 60_000L;
 
     private HttpServer http;
     private final Map<String, Long> passes = new ConcurrentHashMap<>();      // lowernick -> expire
@@ -40,12 +39,19 @@ public class LauncherGuard extends JavaPlugin implements Listener {
     private File accFile;
     private String secret;
     private boolean requirePassword;
+    private boolean enabled;
+    private long passTtl;
+    private String kickMessage;
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
         secret = getConfig().getString("secret", "");
         requirePassword = getConfig().getBoolean("require-password", true);
+        enabled = getConfig().getBoolean("enabled", true);
+        passTtl = getConfig().getLong("window-seconds", 60) * 1000L;
+        kickMessage = org.bukkit.ChatColor.translateAlternateColorCodes('&',
+                getConfig().getString("kick-message", "&6HIVE RP &7» &fЗаходи через наш лаунчер: &6hivegrief.ru"));
         accFile = new File(getDataFolder(), "accounts.json");
         loadAccounts();
 
@@ -155,7 +161,7 @@ public class LauncherGuard extends JavaPlugin implements Listener {
             if (!a.nick.equals(nick)) { respond(ex, err("bad_nick_case")); return; } // регистр должен совпадать
         }
 
-        passes.put(key, System.currentTimeMillis() + PASS_TTL);
+        passes.put(key, System.currentTimeMillis() + passTtl);
         getLogger().info("Пропуск выдан: " + nick);
         respond(ex, "{\"ok\":true}");
     }
@@ -172,11 +178,11 @@ public class LauncherGuard extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPreLogin(AsyncPlayerPreLoginEvent e) {
+        if (!enabled) return;
         String key = e.getName().toLowerCase();
         Long exp = passes.get(key);
         if (exp == null || exp < System.currentTimeMillis()) {
-            e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                    "\u00A76HIVE RP\n\u00A7fВход только через лаунчер!\n\u00A77hivegrief.ru");
+            e.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, kickMessage);
             return;
         }
         Account a = accounts.get(key);
