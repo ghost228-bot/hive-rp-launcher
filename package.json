@@ -1,6 +1,6 @@
 {
   "name": "hive-rp-launcher",
-  "version": "2.0.5",
+  "version": "2.0.6",
   "description": "Лаунчер HIVE RP в стиле GTA 5 RP",
   "main": "src/main.js",
   "author": "Maksim",
