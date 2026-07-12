@@ -10,7 +10,12 @@ let autoUpdater = null;
 try { autoUpdater = require('electron-updater').autoUpdater; } catch { /* dev без npm install */ }
 
 const CONFIG = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'config.json'), 'utf8'));
-const DATA_DIR = path.join(app.getPath('appData'), '.rp-launcher');
+// Forge/1.16.5 падает на путях с кириллицей (C:\Users\Алиса\...) —
+// таким пользователям кладём игру в C:\HiveRP
+const APPDATA = app.getPath('appData');
+const DATA_DIR = (process.platform === 'win32' && /[^\x00-\x7F]/.test(APPDATA))
+  ? 'C:\\HiveRP'
+  : path.join(APPDATA, '.rp-launcher');
 const GAME_DIR = path.join(DATA_DIR, 'minecraft');
 const USERS_FILE = path.join(DATA_DIR, 'users.json');
 const SETTINGS_FILE = path.join(DATA_DIR, 'settings.json');
@@ -18,6 +23,12 @@ const SESSION_FILE = path.join(DATA_DIR, 'session.json');
 const NEWS_FILE = path.join(DATA_DIR, 'news.json');
 
 fs.mkdirSync(GAME_DIR, { recursive: true });
+
+const LOG_FILE = path.join(DATA_DIR, 'launcher.log');
+function log(line) {
+  try { fs.appendFileSync(LOG_FILE, new Date().toISOString() + ' ' + line + '\n'); } catch {}
+}
+log('=== запуск лаунчера, папка игры: ' + GAME_DIR + ' ===');
 
 let win;
 
@@ -357,8 +368,9 @@ ipcMain.handle('game:launch', async (_e, { username, ip, port }) => {
     launcher.on('download-status', e => {
       if (e.total) send('progress', { value: e.current / e.total });
     });
-    launcher.on('data', () => send('game:started'));
-    launcher.on('close', code => { launching = false; send('game:closed', code); });
+    launcher.on('debug', d => log('[debug] ' + String(d).trim()));
+    launcher.on('data', d => { send('game:started'); log('[game] ' + String(d).trim()); });
+    launcher.on('close', code => { launching = false; log('[game] закрылась, код ' + code); send('game:closed', code); });
 
     send('status', 'Запуск Minecraft...');
     await launcher.launch(opts);
