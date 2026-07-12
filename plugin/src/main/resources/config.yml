@@ -1,10 +1,7 @@
-# Защита включена?
-enabled: true
-# Секретный ключ — ДОЛЖЕН совпадать с guardSecret в config.json лаунчера
+# Порт HTTP-API (должен совпадать с guardPort в config.json лаунчера)
+port: 25671
+# Секрет (guardSecret из config.json лаунчера)
 secret: "65550c924d9b8a2a71e6cfa141f76ce2aa60f5f91264bb29"
-# Порт HTTP-API (добавь его в панели хостинга: Network -> Allocations)
-port: 8777
-# Сколько секунд действует пропуск после нажатия «Играть»
-window-seconds: 60
-# Сообщение тем, кто зашёл не через лаунчер
-kick-message: "&6HIVE RP &7» &fЗаходи через наш лаунчер: &6hivegrief.ru"
+# true  - вход/регистрация проверяются на сервере (уникальные ники)
+# false - старый режим (только пропуск по секрету), для переходного периода
+require-password: true
